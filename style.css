@@ -1,0 +1,28 @@
+
+div.dokuteaser {
+    width: 48%;
+    overflow: hidden;
+}
+
+div.dokuteaser img.mediaright {
+    margin: -2em 0 0.2em 0.5em
+}
+
+// right align last single link
+div.dokuteaser p:last-child > a {
+    display: block;
+    text-align: right;
+}
+
+div.dokuteaser-right {
+    float: right;
+    clear: right; //stay away from the TOC
+    padding-left: 10px;
+}
+
+div.dokuteaser-left {
+    float: left;
+    clear: both; //stay away from the TOC and other teasers
+    padding-right: 10px;
+}
+
