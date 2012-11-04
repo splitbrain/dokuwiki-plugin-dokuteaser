@@ -11,7 +11,7 @@ if(!defined('DOKU_INC')) die();
 if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'syntax.php');
 
-class syntax_plugin_dokuteaser extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
 
     function getType(){ return 'formatting';}
     function getAllowedTypes() { return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs'); }
@@ -27,17 +27,18 @@ class syntax_plugin_dokuteaser extends DokuWiki_Syntax_Plugin {
      * Connect pattern to lexer
      */
     function connectTo($mode) {
-        $this->Lexer->addEntryPattern('<dokuteaser.*?>(?=.*?</dokuteaser>)',$mode,'plugin_dokuteaser');
+        $this->Lexer->addEntryPattern('<dokuteaser.*?>(?=.*?</dokuteaser>)',$mode,'plugin_dokuteaser_dokuteaser');
     }
 
     function postConnect() {
-        $this->Lexer->addExitPattern('</dokuteaser>', 'plugin_dokuteaser');
+        $this->Lexer->addExitPattern('</dokuteaser>', 'plugin_dokuteaser_dokuteaser');
     }
 
     /**
      * Handle the match
      */
     function handle($match, $state, $pos, &$handler){
+        global $conf;
         switch ($state) {
             case DOKU_LEXER_ENTER:
                 $sep  = strpos($match,' ');
@@ -60,6 +61,10 @@ class syntax_plugin_dokuteaser extends DokuWiki_Syntax_Plugin {
                     $title = trim($title);
 
                     $handler->_addCall('header',array($title,$level,$pos), $pos);
+                    // close the section edit the header could open
+                    if ($title && $level <= $conf['maxseclevel']) {
+                        $handler->addPluginCall('dokuteaser_closesection', array(), DOKU_LEXER_SPECIAL, $pos, '');
+                    }
                 }
                 return false;
 
@@ -78,8 +83,17 @@ class syntax_plugin_dokuteaser extends DokuWiki_Syntax_Plugin {
         list($state, $data) = $indata;
 
         if($mode == 'xhtml'){
+            /** @var Doku_Renderer_xhtml $renderer */
             switch ($state) {
                 case DOKU_LEXER_ENTER:
+                    // add a section edit right at the beginning of the wrap output
+                    $renderer->startSectionEdit(0, 'plugin_dokuteaser_start');
+                    $renderer->finishSectionEdit();
+                    // add a section edit for the end of the wrap output. This prevents the renderer
+                    // from closing the last section edit so the next section button after the wrap syntax will
+                    // include the whole wrap syntax
+                    $renderer->startSectionEdit(0, 'plugin_dokuteaser_end');
+
                     $class = '';
                     if($data == 'left') $class = ' dokuteaser-left';
                     if($data == 'right') $class = ' dokuteaser-right';
@@ -88,6 +102,7 @@ class syntax_plugin_dokuteaser extends DokuWiki_Syntax_Plugin {
 
                 case DOKU_LEXER_EXIT:
                     $renderer->doc .= "</div>";
+                    $renderer->finishSectionEdit();
                     break;
             }
             return true;
