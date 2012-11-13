@@ -1,28 +1,39 @@
 
 div.dokuteaser {
     width: 48%;
-    overflow: hidden;
+    margin-right: 4%;
+    float: left;
+    clear: right; /* stay away from the TOC */
 }
 
-div.dokuteaser img.mediaright {
-    margin: -2em 0 0.2em 0.5em
+div.dokuteaser:nth-child(odd) {
+    margin-right: 0;
+}
+div.dokuteaser:nth-child(even) {
+    clear: left;
 }
 
-// right align last single link
+#IE8 div.dokuteaser {
+    float: none;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 2%;
+}
+/* make teaser full width in IE7 */
+#IE7 div.dokuteaser {
+    float: none;
+    margin-right: 0;
+    width: auto;
+}
+
+
+div.dokuteaser img {
+    margin-top: -2em;
+    margin-left: 0.5em;
+}
+
+/* right align last single link */
 div.dokuteaser p:last-child > a {
     display: block;
     text-align: right;
 }
-
-div.dokuteaser-right {
-    float: right;
-    clear: right; //stay away from the TOC
-    padding-left: 10px;
-}
-
-div.dokuteaser-left {
-    float: left;
-    clear: both; //stay away from the TOC and other teasers
-    padding-right: 10px;
-}
-
