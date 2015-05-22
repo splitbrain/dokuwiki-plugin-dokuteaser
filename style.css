@@ -36,4 +36,5 @@ div.dokuteaser img {
 div.dokuteaser p:last-child > a {
     display: block;
     text-align: right;
+    background-image: none;
 }
