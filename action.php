@@ -17,7 +17,7 @@ class action_plugin_dokuteaser extends DokuWiki_Action_Plugin {
      *
      * @param Doku_Event_Handler $controller The even controller
      */
-    function register(&$controller){
+    function register(Doku_Event_Handler $controller){
         $controller->register_hook('HTML_SECEDIT_BUTTON', 'BEFORE', $this, 'handle_secedit_button');
     }
 
@@ -27,7 +27,7 @@ class action_plugin_dokuteaser extends DokuWiki_Action_Plugin {
      * @param Doku_Event $event The event object
      * @param array      $args Parameters for the event
      */
-    public function handle_secedit_button($event, $args) {
+    public function handle_secedit_button(Doku_Event $event, $args) {
         // counter of the number of currently opened wraps
         static $wraps = 0;
         $data = $event->data;
