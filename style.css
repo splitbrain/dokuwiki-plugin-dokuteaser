@@ -27,7 +27,7 @@ div.dokuteaser:nth-child(even) {
 }
 
 
-div.dokuteaser img {
+div.dokuteaser img.mediaright {
     margin-top: -2em;
     margin-left: 0.5em;
 }
