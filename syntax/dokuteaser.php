@@ -87,12 +87,12 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
             switch ($state) {
                 case DOKU_LEXER_ENTER:
                     // add a section edit right at the beginning of the wrap output
-                    $renderer->startSectionEdit(0, 'plugin_dokuteaser_start');
+                    $renderer->startSectionEdit(0, ['target' => 'plugin_dokuteaser_start']);
                     $renderer->finishSectionEdit();
                     // add a section edit for the end of the wrap output. This prevents the renderer
                     // from closing the last section edit so the next section button after the wrap syntax will
                     // include the whole wrap syntax
-                    $renderer->startSectionEdit(0, 'plugin_dokuteaser_end');
+                    $renderer->startSectionEdit(0, ['target' => 'plugin_dokuteaser_end']);
 
                     $class = '';
                     if($data == 'left') $class = ' dokuteaser-left';
