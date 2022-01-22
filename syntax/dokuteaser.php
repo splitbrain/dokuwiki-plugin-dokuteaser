@@ -6,49 +6,50 @@
  * @author     Anika Henke <anika@selfthinker.org>
  */
 
-if (!defined('DOKU_INC')) die();
-
-if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
-require_once(DOKU_PLUGIN . 'syntax.php');
-
 class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
 {
 
+    /** @inheritdoc  */
     function getType()
     {
         return 'formatting';
     }
 
+    /** @inheritdoc  */
     function getAllowedTypes()
     {
         return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs');
     }
 
+    /** @inheritdoc  */
     function getPType()
     {
         return 'stack';
     }
 
+    /** @inheritdoc  */
     function getSort()
     {
         return 195;
     }
 
-    // override default accepts() method to allow nesting - ie, to get the plugin accepts its own entry syntax
+    /**
+     * override default accepts() method to allow nesting - ie, to get the plugin accepts its own entry syntax
+     * @inheritdoc
+     */
     function accepts($mode)
     {
         if ($mode == substr(get_class($this), 7)) return true;
         return parent::accepts($mode);
     }
 
-    /**
-     * Connect pattern to lexer
-     */
+    /** @inheritdoc  */
     function connectTo($mode)
     {
         $this->Lexer->addEntryPattern('<dokuteaser.*?>(?=.*?</dokuteaser>)', $mode, 'plugin_dokuteaser_dokuteaser');
     }
 
+    /** @inheritdoc  */
     function postConnect()
     {
         $this->Lexer->addExitPattern('</dokuteaser>', 'plugin_dokuteaser_dokuteaser');
@@ -71,7 +72,7 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
                 // check if $match is a == header ==
                 $headerMatch = preg_grep('/([ \t]*={2,}[^\n]+={2,}[ \t]*(?=))/msSi', array($match));
                 if (empty($headerMatch)) {
-                    $handler->_addCall('cdata', array($match), $pos);
+                    $handler->addCall('cdata', array($match), $pos);
                 } else {
                     // if it's a == header ==, use the core header() renderer
                     // (copied from core header() in inc/parser/handler.php)
@@ -81,7 +82,7 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
                     $title = trim($title, '=');
                     $title = trim($title);
 
-                    $handler->_addCall('header', array($title, $level, $pos), $pos);
+                    $handler->addCall('header', array($title, $level, $pos), $pos);
                     // close the section edit the header could open
                     if ($title && $level <= $conf['maxseclevel']) {
                         $handler->addPluginCall('dokuteaser_closesection', array(), DOKU_LEXER_SPECIAL, $pos, '');
@@ -95,16 +96,14 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
         return false;
     }
 
-    /**
-     * Create output
-     */
-    function render($mode, Doku_Renderer $renderer, $indata)
+    /** @inheritdoc  */
+    function render($format, Doku_Renderer $renderer, $data)
     {
 
-        if (empty($indata)) return false;
-        list($state, $data) = $indata;
+        if (empty($data)) return false;
+        list($state, $attribute) = $data;
 
-        if ($mode == 'xhtml') {
+        if ($format == 'xhtml') {
             /** @var Doku_Renderer_xhtml $renderer */
             switch ($state) {
                 case DOKU_LEXER_ENTER:
@@ -117,8 +116,8 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
                     $renderer->startSectionEdit(0, ['target' => 'plugin_dokuteaser_end']);
 
                     $class = '';
-                    if ($data == 'left') $class = ' dokuteaser-left';
-                    if ($data == 'right') $class = ' dokuteaser-right';
+                    if ($attribute == 'left') $class = ' dokuteaser-left';
+                    if ($attribute == 'right') $class = ' dokuteaser-right';
                     $renderer->doc .= '<div class="dokuteaser' . $class . '">';
                     break;
 

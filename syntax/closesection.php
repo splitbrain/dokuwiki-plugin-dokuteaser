@@ -6,24 +6,21 @@
  * @author     Michael Hamann <michael@content-space.de>
  */
 
-if (!defined('DOKU_INC')) die();
-
-if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
-require_once(DOKU_PLUGIN . 'syntax.php');
-
 class syntax_plugin_dokuteaser_closesection extends DokuWiki_Syntax_Plugin
 {
-
+    /** @inheritdoc  */
     function getType()
     {
         return 'substition';
     }
 
+    /** @inheritdoc  */
     function getPType()
     {
         return 'block';
     }
 
+    /** @inheritdoc  */
     function getSort()
     {
         return 195;
@@ -31,15 +28,14 @@ class syntax_plugin_dokuteaser_closesection extends DokuWiki_Syntax_Plugin
 
     /**
      * Dummy handler, this syntax part has no syntax but is directly added to the instructions by the div syntax
+     * @inheritdoc
      */
     function handle($match, $state, $pos, Doku_Handler $handler)
     {
     }
 
-    /**
-     * Create output
-     */
-    function render($mode, Doku_Renderer $renderer, $indata)
+    /** @inheritdoc  */
+    function render($mode, Doku_Renderer $renderer, $data)
     {
         if ($mode == 'xhtml') {
             /** @var Doku_Renderer_xhtml $renderer */
