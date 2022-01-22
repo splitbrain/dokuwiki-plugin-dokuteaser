@@ -6,19 +6,37 @@
  * @author     Anika Henke <anika@selfthinker.org>
  */
 
-if(!defined('DOKU_INC')) die();
+if (!defined('DOKU_INC')) die();
 
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'syntax.php');
+if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
+require_once(DOKU_PLUGIN . 'syntax.php');
 
-class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin
+{
 
-    function getType(){ return 'formatting';}
-    function getAllowedTypes() { return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs'); }
-    function getPType(){ return 'stack';}
-    function getSort(){ return 195; }
+    function getType()
+    {
+        return 'formatting';
+    }
+
+    function getAllowedTypes()
+    {
+        return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs');
+    }
+
+    function getPType()
+    {
+        return 'stack';
+    }
+
+    function getSort()
+    {
+        return 195;
+    }
+
     // override default accepts() method to allow nesting - ie, to get the plugin accepts its own entry syntax
-    function accepts($mode) {
+    function accepts($mode)
+    {
         if ($mode == substr(get_class($this), 7)) return true;
         return parent::accepts($mode);
     }
@@ -26,24 +44,27 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
     /**
      * Connect pattern to lexer
      */
-    function connectTo($mode) {
-        $this->Lexer->addEntryPattern('<dokuteaser.*?>(?=.*?</dokuteaser>)',$mode,'plugin_dokuteaser_dokuteaser');
+    function connectTo($mode)
+    {
+        $this->Lexer->addEntryPattern('<dokuteaser.*?>(?=.*?</dokuteaser>)', $mode, 'plugin_dokuteaser_dokuteaser');
     }
 
-    function postConnect() {
+    function postConnect()
+    {
         $this->Lexer->addExitPattern('</dokuteaser>', 'plugin_dokuteaser_dokuteaser');
     }
 
     /**
      * Handle the match
      */
-    function handle($match, $state, $pos, Doku_Handler $handler){
+    function handle($match, $state, $pos, Doku_Handler $handler)
+    {
         global $conf;
         switch ($state) {
             case DOKU_LEXER_ENTER:
-                $sep  = strpos($match,' ');
-                if($sep === false) $sep = strlen($match);
-                $data = strtolower(trim(substr($match,$sep,-1)));
+                $sep = strpos($match, ' ');
+                if ($sep === false) $sep = strlen($match);
+                $data = strtolower(trim(substr($match, $sep, -1)));
                 return array($state, $data);
 
             case DOKU_LEXER_UNMATCHED:
@@ -55,12 +76,12 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
                     // if it's a == header ==, use the core header() renderer
                     // (copied from core header() in inc/parser/handler.php)
                     $title = trim($match);
-                    $level = 7 - strspn($title,'=');
-                    if($level < 1) $level = 1;
-                    $title = trim($title,'=');
+                    $level = 7 - strspn($title, '=');
+                    if ($level < 1) $level = 1;
+                    $title = trim($title, '=');
                     $title = trim($title);
 
-                    $handler->_addCall('header',array($title,$level,$pos), $pos);
+                    $handler->_addCall('header', array($title, $level, $pos), $pos);
                     // close the section edit the header could open
                     if ($title && $level <= $conf['maxseclevel']) {
                         $handler->addPluginCall('dokuteaser_closesection', array(), DOKU_LEXER_SPECIAL, $pos, '');
@@ -77,12 +98,13 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
     /**
      * Create output
      */
-    function render($mode, Doku_Renderer $renderer, $indata) {
+    function render($mode, Doku_Renderer $renderer, $indata)
+    {
 
         if (empty($indata)) return false;
         list($state, $data) = $indata;
 
-        if($mode == 'xhtml'){
+        if ($mode == 'xhtml') {
             /** @var Doku_Renderer_xhtml $renderer */
             switch ($state) {
                 case DOKU_LEXER_ENTER:
@@ -95,9 +117,9 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
                     $renderer->startSectionEdit(0, ['target' => 'plugin_dokuteaser_end']);
 
                     $class = '';
-                    if($data == 'left') $class = ' dokuteaser-left';
-                    if($data == 'right') $class = ' dokuteaser-right';
-                    $renderer->doc .= '<div class="dokuteaser'.$class.'">';
+                    if ($data == 'left') $class = ' dokuteaser-left';
+                    if ($data == 'right') $class = ' dokuteaser-right';
+                    $renderer->doc .= '<div class="dokuteaser' . $class . '">';
                     break;
 
                 case DOKU_LEXER_EXIT:
@@ -109,7 +131,6 @@ class syntax_plugin_dokuteaser_dokuteaser extends DokuWiki_Syntax_Plugin {
         }
         return false;
     }
-
 
 }
 

@@ -9,6 +9,7 @@ div.dokuteaser {
 div.dokuteaser:nth-child(odd) {
     margin-right: 0;
 }
+
 div.dokuteaser:nth-child(even) {
     clear: left;
 }
@@ -19,6 +20,7 @@ div.dokuteaser:nth-child(even) {
     vertical-align: top;
     margin-right: 2%;
 }
+
 /* make teaser full width in IE7 */
 #IE7 div.dokuteaser {
     float: none;
